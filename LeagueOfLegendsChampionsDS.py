@@ -1,9 +1,8 @@
 import re
 import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image
-from mpl_toolkits.basemap import Basemap
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+
+
 def main():
     rawChampStatList = getStats("prerework.txt")
     c,p,w,b,r = createProfiles(rawChampStatList)
