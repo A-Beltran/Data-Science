@@ -1,23 +1,99 @@
 import re
 import matplotlib.pyplot as plt
 import numpy as np
-
+from PIL import Image
+from mpl_toolkits.basemap import Basemap
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 def main():
     rawChampStatList = getStats("prerework.txt")
     c,p,w,b,r = createProfiles(rawChampStatList)
-    createProfiles(rawChampStatList)
-    outFile('LoLChampDataPRW.txt',c,p,w,b,r)
+    #outFile('LoLChampDataPRW.txt',c,p,w,b,r)
     print 'file created'
     popularGraph(p,c,w)
+    roleBanGraph(c,b,r)
+    roleWinGraph(c,w,r)
+
+
+def sortRoles(champions,rate,role,div):
+    topLane = []
+    midLane = []
+    adCarry = []
+    support = []
+    jungler = []
+
+    for i in range(0,len(champions)):
+        if(role[i] == 'Top Lane'):
+            topLane.append(float(rate[i]))
+        if(role[i] == 'Middle Lane'):
+            midLane.append(float(rate[i]))
+        if(role[i] == 'AD Carry'):
+            adCarry.append(float(rate[i]))
+        if(role[i] == 'Support'):
+            support.append(float(rate[i]))
+        if(role[i] == 'Jungler'):
+            jungler.append(float(rate[i]))
+    ta = 0
+    for i in topLane:
+        ta+=i
+    ma = 0
+    for i in midLane:
+        ma+=i
+    aa = 0
+    for i in adCarry:
+        aa+=i
+    sa = 0
+    for i in support:
+        sa+=i
+    ja = 0
+    for i in jungler:
+        ja+=i
+    return ta/div,ma/div,aa/div,sa/div,ja/div
+    
+
+
+def roleWinGraph(c,w,r):
+    print 'TOP WIN RATE ROLES'
+    roles = ['Top Lane','Middle Lane','AD Carry','Support','Jungler']
+    top,mid,adc,sup,jun = sortRoles(c,w,r,100)
+    print top,mid,adc,sup,jun
+
+    N = len(roles)
+    ind = np.arange(N)  # the x locations for the groups
+
+    width = 1.00      # the width of the bars
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(ind, [top,mid,adc,sup,jun], width, color='b')
+
+    # add some text for labels, title and axes ticks
+    ax.set_ylabel('Role Win Rate')
+    ax.set_title('Win Rate by Role')
+    ax.set_xticks(ind+0.5)
+    ax.set_xticklabels([roles[i] for i in range(0,5)])
+
+    plt.show()
+    
+def roleBanGraph(c,b,r):
+    print 'TOP BAN RATE ROLES'
+    roles = ['Top Lane','Middle Lane','AD Carry','Support','Jungler']
+    top,mid,adc,sup,jun = sortRoles(c,b,r,5)
+    N = len(roles)
+    ind = np.arange(N)  # the x locations for the groups
+
+    width = 1.00      # the width of the bars
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(ind, [top,mid,adc,sup,jun], width, color='r')
+
+    # add some text for labels, title and axes ticks
+    ax.set_ylabel('Cumulative Percentage')
+    ax.set_title('Ban Rate by Role')
+    ax.set_xticks(ind+0.5)
+    ax.set_xticklabels([roles[i] for i in range(0,5)])
+
+    plt.show()
 
 
 
-def winBanGraph(popularity,champion,winRate):
-    print 'TOP WIN RATE CHAMPIONS'
-    indexWin = mostStat(winRate,)
-    print indexPopular
-    for i in indexPopular:
-        print champion[i]
+
 
 def popularGraph(popularity,champion,winRate):
     print 'MOST POPULAR CHAMPIONS'
@@ -37,7 +113,7 @@ def popularGraph(popularity,champion,winRate):
     rects1 = ax.bar(ind, popY, width, color='r')
 
     winY = [winRate[i] for i in indexPopular]
-    rects2 = ax.bar(ind + width, winY, width, color='y')
+    rects2 = ax.bar(ind + width, winY, width, color='b')
 
 # add some text for labels, title and axes ticks
     ax.set_ylabel('Percentage')
